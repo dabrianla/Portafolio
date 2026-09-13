@@ -125,6 +125,26 @@ secciones y el último dato de la ficha acababa por debajo de él. El hueco crec
 con el ancho de la ventana porque el botón está pegado al borde: con un valor
 fijo, en 1024 sobraba tanto que la ficha se veía forzada a scrollear.
 
+**La pantalla fija sin scroll es solo de escritorio, y a partir de `lg`.** La
+regla de "cada sección es una pantalla de juego" —`body { overflow: hidden }`,
+`h-dvh`, contenido centrado verticalmente— se sostiene con 900px de alto y se
+rompe con 640. En un móvil el contenido no cabe, y al ir centrado lo que sobra
+se reparte **arriba y abajo**: lo de abajo se intuye, pero lo de arriba queda
+recortado por el `overflow` y con el scroll bloqueado no hay forma de llegar a
+ello. Ahí vivía el título de cada sección. Medido a 360×640, el `<h1>` de LOGROS
+caía entero fuera de la pantalla y el nombre de la portada perdía 18 de sus
+41px; entre las cinco rutas afectadas quedaban 73 elementos con texto fuera de
+alcance.
+
+Por debajo de `lg` la página fluye y se scrollea, y el contenido se alinea
+arriba en vez de centrarse. De ahí se siguen tres cosas que conviene no
+deshacer: los topes de altura de los paneles (CV, Logros, Sobre mí) son
+`lg:` y nada más —anidar un scroll dentro de otro en táctil hace impredecible
+cuál se mueve—; la figura del CV usa alto fijo en móvil, porque con `vh` se
+reescalaba cada vez que el navegador oculta su barra; y el interruptor de
+sonido, que es `fixed`, se reduce al icono, porque desde que hay scroll se
+cruza con el texto en lugar de flotar sobre un hueco.
+
 **Los certificados viven en un solo sitio.** Estuvieron en la pestaña
 Formación del currículum y ahora están en LOGROS, no en las dos. `cv.ts` sigue
 siendo su dueño —son datos del currículum—; lo que cambió es qué pantalla los
