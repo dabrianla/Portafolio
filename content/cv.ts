@@ -38,6 +38,37 @@ export const IDENTITY = {
   email: "dabrianla@gmail.com",
 } as const;
 
+/**
+ * Enlace de redacción de Gmail, ya con el destinatario puesto.
+ *
+ * `mailto:` abre el cliente que el sistema tenga por defecto, que en un móvil
+ * puede ser uno que la persona no usa —o ninguno, y entonces no pasa nada al
+ * pulsar—. Esta URL va directa a Gmail: en Android la intercepta la propia app
+ * y en escritorio abre Gmail en el navegador. `mailto:` sigue disponible en la
+ * dirección de arriba, para quien prefiera su propio cliente.
+ */
+export const GMAIL_COMPOSE =
+  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(IDENTITY.email)}`;
+
+/**
+ * Perfiles públicos, en el orden en que aparecen en Contacto.
+ * `handle` es lo que se lee en pantalla; `href` es adónde lleva.
+ */
+export const LINKS = [
+  {
+    id: "github",
+    label: "GitHub",
+    handle: "dabrianla",
+    href: "https://github.com/dabrianla",
+  },
+  {
+    id: "linkedin",
+    label: "LinkedIn",
+    handle: "in/dabrian",
+    href: "https://www.linkedin.com/in/dabrian/",
+  },
+] as const;
+
 export const PROFILE =
   "Ingeniero en Informática con experiencia en atención al público y destacadas " +
   "habilidades de comunicación. Combino competencias técnicas con capacidad para " +

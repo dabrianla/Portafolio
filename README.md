@@ -111,13 +111,12 @@ periodo por debajo de `sm`, donde no hay raíl que lo muestre. El `tag` de cada
 puesto hace de etiqueta del proyecto: con dos puestos del mismo cargo para el
 mismo cliente, es lo único que los distingue de un vistazo.
 
-**La foto del currículum es un recorte, no una foto con fondo.**
-`components/cv/FullFigure.tsx` muestra a Dabrian de cuerpo entero, recortado con
-transparencia (`public/cv/figura.webp`), para que se apoye sobre el acero
-animado del fondo en lugar de meterse en un recuadro. El halo de acento que
-lleva detrás no es adorno: el traje es azul muy oscuro y sin él la silueta se
-disuelve; va en CSS, no horneado en la imagen, para que siga al acento de cada
-sección. Es la única foto del sitio y vive solo aquí.
+**El sitio no tiene ninguna fotografía.** La pestaña de Perfil llevó una figura
+de cuerpo entero (`FullFigure`, con `public/cv/figura.webp`) y se retiró por
+decisión de Dabrian. El componente y la imagen están borrados, no ocultos; si
+alguna vez vuelve una foto, el historial de git conserva cómo estaba resuelta
+—recorte con transparencia sobre el acero del fondo, y un halo de acento en CSS
+porque el traje oscuro se disolvía contra la página—.
 
 **La columna de Sobre mí reserva la esquina del interruptor de sonido**
 (`lg:pr-24 xl:pr-32`). El botón va fijo abajo a la derecha en todas las
@@ -140,10 +139,21 @@ Por debajo de `lg` la página fluye y se scrollea, y el contenido se alinea
 arriba en vez de centrarse. De ahí se siguen tres cosas que conviene no
 deshacer: los topes de altura de los paneles (CV, Logros, Sobre mí) son
 `lg:` y nada más —anidar un scroll dentro de otro en táctil hace impredecible
-cuál se mueve—; la figura del CV usa alto fijo en móvil, porque con `vh` se
-reescalaba cada vez que el navegador oculta su barra; y el interruptor de
-sonido, que es `fixed`, se reduce al icono, porque desde que hay scroll se
-cruza con el texto en lugar de flotar sobre un hueco.
+cuál se mueve—; el interruptor de sonido, que es `fixed`, se reduce al icono,
+porque desde que hay scroll se cruza con el texto en lugar de flotar sobre un
+hueco; y nada que deba medirse contra la pantalla usa `vh` en móvil, porque esa
+altura cambia cada vez que el navegador oculta o muestra su barra.
+
+**Las demos llevan geometría explícita en móvil, no heredada.** Su altura salía
+de una cadena de seis flex anidados que en pantallas pequeñas se rompía en
+`StagePanel` —su `h-full` daba 415px dentro de un padre de 812— y el `<iframe>`
+acababa en 323×150: el 16% de la pantalla, para apps pensadas en 4:3. Esos 150px
+no los eligió nadie, son la altura por defecto de un `<iframe>`, la que queda
+cuando `height: 100%` no llega a resolver. Por debajo de `lg` el marco usa
+proporción 4:3 fija en vista previa y ocupa la pantalla entera al lanzarse; el
+botón de volver pasa entonces a `fixed` con `z-60`, porque es la única salida.
+En escritorio la demo sigue dentro del panel del rayo, dimensionada por la
+cadena de flex.
 
 **Los certificados viven en un solo sitio.** Estuvieron en la pestaña
 Formación del currículum y ahora están en LOGROS, no en las dos. `cv.ts` sigue
