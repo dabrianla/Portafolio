@@ -205,7 +205,7 @@ export default function ProjectsScreen() {
       {/* En móvil no hay silueta que expandir: la ficha se abre como hoja. */}
       <AnimatePresence>
         {infoOpen && canShowInfo && (
-          <div className="fixed inset-0 z-30 bg-steel-950/95 lg:hidden">
+          <div className="fixed inset-0 z-50 bg-steel-950/95 lg:hidden">
             <ProjectInfoPanel project={focused} onClose={() => setInfoOpen(false)} />
           </div>
         )}
@@ -218,7 +218,13 @@ export default function ProjectsScreen() {
           if (live) return setLive(false);
           back();
         }}
-        className="absolute bottom-7 left-8 z-20 border border-steel-600/70 bg-steel-900/85 px-5 py-2.5 font-tech text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-steel-300 transition-colors hover:border-[var(--accent)] hover:text-steel-100 focus-visible:border-[var(--accent)] focus-visible:outline-none"
+        // Con la demo lanzada pasa a `fixed` y por encima de todo: en móvil la
+        // demo ocupa la pantalla entera, y este botón es la única salida. En
+        // escritorio el cambio es inocuo, porque allí `main` mide exactamente
+        // el viewport y las dos posiciones coinciden.
+        className={`${
+          live ? "fixed z-[60]" : "absolute z-20"
+        } bottom-7 left-8 border border-steel-600/70 bg-steel-900/85 px-5 py-2.5 font-tech text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-steel-300 transition-colors hover:border-[var(--accent)] hover:text-steel-100 focus-visible:border-[var(--accent)] focus-visible:outline-none`}
       >
         <span className="text-[var(--accent)]">Esc</span> ·{" "}
         {infoOpen ? "Cerrar ficha" : live ? "Cerrar demo" : "Volver al menú"}

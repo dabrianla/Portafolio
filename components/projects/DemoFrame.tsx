@@ -47,7 +47,28 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
   }, [demo]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3">
+    /* En escritorio la demo es un panel más dentro del escenario y su altura
+     * sale de la cadena de flex.
+     *
+     * En móvil esa cadena no le daba altura utilizable: el iframe se quedaba en
+     * 323x150 —el 16% de la pantalla, y 150px es literalmente la altura por
+     * defecto de un <iframe>, la que se usa cuando `height: 100%` no resuelve—.
+     * Para una app de tablet eso es inservible, así que aquí la geometría es
+     * explícita en vez de heredada: proporción fija en vista previa y la
+     * pantalla entera al lanzarla.
+     *
+     * El `pb-16` reserva la banda inferior para el botón de volver, que flota
+     * por encima de esta capa. */
+    <div
+      className={
+        live
+          ? "fixed inset-0 z-40 flex flex-col gap-2 bg-steel-950 p-3 pb-16 lg:static lg:z-auto lg:min-h-0 lg:flex-1 lg:gap-3 lg:bg-transparent lg:p-0"
+          : // `flex-1` es lo que ensancha el marco: el padre es una fila, y sin
+            // esto la caja se queda en su ancho de contenido (300px) por mucha
+            // pantalla que haya al lado.
+            "flex min-h-0 flex-1 flex-col gap-3"
+      }
+    >
       {/* En vista previa todo el marco arranca la demo: en móvil no hay tecla
           Enter, y en escritorio pulsar sobre la app es el gesto natural. */}
       <div
@@ -64,12 +85,11 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
                 }
               }
         }
-        className={`relative min-h-0 flex-1 border-2 transition-colors duration-300 ${
+        className={`clip-demo relative border-2 transition-colors duration-300 ${
           live
-            ? "border-[var(--accent)]"
-            : "cursor-pointer border-steel-600/70 hover:border-[var(--accent)]/70 focus-visible:border-[var(--accent)] focus-visible:outline-none"
+            ? "clip-demo--fullscreen min-h-0 flex-1 border-[var(--accent)]"
+            : "aspect-[4/3] w-full cursor-pointer border-steel-600/70 hover:border-[var(--accent)]/70 focus-visible:border-[var(--accent)] focus-visible:outline-none lg:aspect-auto lg:min-h-0 lg:flex-1"
         }`}
-        style={{ clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%)" }}
       >
         <iframe
           ref={frame}

@@ -199,6 +199,21 @@ kbd {
   clip-path: polygon(0 0, 100% 0, 100% 34%, 34% 34%, 34% 100%, 0 100%);
 }
 
+/* Esquina cortada del marco de la demo. Va en una clase y no en un estilo en
+   línea porque necesita apagarse por media query. */
+.clip-demo {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+
+/* Con la demo lanzada a pantalla completa en móvil el corte estorba: mordería
+   la esquina de la propia app en lugar de la del marco que la enmarca. En
+   escritorio la demo sigue dentro de su panel, así que el corte se mantiene. */
+@media (max-width: 1023px) {
+  .clip-demo--fullscreen {
+    clip-path: none;
+  }
+}
+
 /* -------------------------------------------------------------------------
    Glitch periódico del nombre
    Tres copias apiladas del título: la legible y dos tintadas en cian y
