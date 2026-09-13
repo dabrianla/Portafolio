@@ -133,7 +133,7 @@ export default function ProjectsScreen() {
   } as CSSProperties;
 
   return (
-    <main className="relative flex h-dvh w-full flex-col overflow-hidden lg:block">
+    <main className="relative flex min-h-dvh w-full flex-col lg:block lg:h-dvh lg:overflow-hidden">
       {/* Rejilla. Va primera en el DOM para que en móvil quede arriba, que es
           donde se espera el selector. */}
       <div

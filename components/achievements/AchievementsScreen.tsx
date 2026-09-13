@@ -46,9 +46,11 @@ export default function AchievementsScreen() {
     <div className="w-full space-y-5">
       <ProgressMeter unlocked={UNLOCKED_COUNT} total={ACHIEVEMENTS.length} />
 
-      {/* La rejilla scrollea dentro de sí misma: la página nunca lo hace, que
-          es la regla del sitio —cada sección es una pantalla de juego. */}
-      <div className="panel-scroll max-h-[38vh] overflow-y-auto pr-3 lg:max-h-[44vh]">
+      {/* En escritorio la rejilla scrollea dentro de sí misma: la página nunca
+          lo hace, que es la regla del sitio —cada sección es una pantalla de
+          juego. En móvil esa regla se levanta y scrollea la página, así que
+          aquí no hay tope: un scroll dentro de otro sería peor en táctil. */}
+      <div className="panel-scroll lg:max-h-[44vh] lg:overflow-y-auto lg:pr-3">
         <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {ACHIEVEMENTS.map((logro, i) => (
             <li key={logro.id}>

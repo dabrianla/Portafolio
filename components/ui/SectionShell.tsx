@@ -45,14 +45,24 @@ export default function SectionShell({
   const { back } = useSectionChrome();
 
   return (
-    <main className="relative h-dvh w-full overflow-hidden">
+    <main className="relative min-h-dvh w-full lg:h-dvh lg:overflow-hidden">
       <span
         aria-hidden
         className="clip-corner absolute left-8 top-8 h-10 w-10 bg-[var(--accent)]/45"
       />
 
+      {/* Dos layouts distintos, no uno adaptado.
+       *
+       * Desde `lg` es la pantalla fija de siempre: alto completo y contenido
+       * centrado verticalmente.
+       *
+       * Por debajo la página fluye y se scrollea. El centrado se sustituye por
+       * `justify-start` a propósito: centrar un contenido más alto que el
+       * viewport lo empuja fuera por arriba, que es lo que dejaba los títulos
+       * cortados. El `pt-24` despeja la marca de esquina del HUD, que ocupa
+       * hasta los 72px y se montaba sobre el <h1>. */}
       <div
-        className={`mx-auto flex h-full max-w-[1500px] flex-col justify-center gap-8 px-6 pb-20 sm:px-8 lg:grid lg:items-center lg:gap-16 lg:px-16 lg:pb-0 ${COLUMNS[layout]}`}
+        className={`mx-auto flex min-h-dvh max-w-[1500px] flex-col justify-start gap-8 px-6 pb-16 pt-24 sm:px-8 lg:grid lg:h-full lg:min-h-0 lg:items-center lg:justify-center lg:gap-16 lg:px-16 lg:pb-0 lg:pt-0 ${COLUMNS[layout]}`}
       >
         <motion.div
           initial={{ opacity: 0, x: -40 }}

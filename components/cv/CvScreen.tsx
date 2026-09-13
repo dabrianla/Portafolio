@@ -83,9 +83,12 @@ export default function CvScreen() {
             animate={{ opacity: 1, x: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -30, filter: "blur(6px)" }}
             transition={{ duration: reducedMotion ? 0.12 : 0.28, ease: "easeOut" }}
-            // En pantallas bajas o móviles el panel más largo no cabe; se le
-            // permite scroll propio para que la página siga sin scrollear.
-            className="panel-scroll max-h-[50vh] overflow-y-auto pr-3 lg:max-h-[52vh]"
+            // El tope de altura y el scroll propio son solo de escritorio, que
+            // es donde la página no scrollea y el panel más largo no cabría.
+            // En móvil la página ya fluye: anidar aquí un segundo scroll daría
+            // dos superficies deslizables solapadas, que en táctil es una
+            // lotería sobre cuál de las dos se mueve.
+            className="panel-scroll lg:max-h-[52vh] lg:overflow-y-auto lg:pr-3"
           >
             <Panel />
           </motion.div>

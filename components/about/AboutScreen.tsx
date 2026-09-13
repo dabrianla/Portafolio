@@ -25,15 +25,15 @@ const STATS = [
  */
 export default function AboutScreen() {
   return (
-    // En móvil la ficha no cabe en una pantalla —y con la letra a un tamaño
-    // legible, menos— y el sitio no scrollea: sin esto los últimos datos
-    // quedaban fuera y era imposible llegar a ellos. Mismo recurso que los
-    // paneles del CV.
+    // El scroll interno que había aquí en móvil ya no hace falta: la página
+    // scrollea. Era además un parche sobre el síntoma —dejaba alcanzable el
+    // final de la ficha, pero no el título de la sección, que quedaba recortado
+    // por arriba fuera de este contenedor.
     //
     // El `pr` de escritorio reserva la esquina del interruptor de sonido, que
     // va fijo ahí abajo a la derecha: sin él, el último dato de la ficha acaba
     // por debajo del botón.
-    <div className="panel-scroll max-h-[62vh] w-full space-y-8 overflow-y-auto pr-3 lg:max-h-none lg:overflow-visible lg:pr-24 xl:pr-32">
+    <div className="w-full space-y-8 lg:pr-24 xl:pr-32">
       {/* Sin `backdrop-blur`: desenfocar el fondo obliga al navegador a sacar
           la caja a su propia capa, y el texto de dentro pierde el suavizado
           subpíxel. Un fondo algo más opaco calma igual las vetas de detrás sin

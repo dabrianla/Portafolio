@@ -43,7 +43,7 @@ export default function FullFigure() {
 
   if (falta) {
     return (
-      <div className="flex h-[28vh] w-[160px] shrink-0 items-center justify-center sm:h-[42vh] sm:w-[210px]">
+      <div className="flex h-60 w-[144px] shrink-0 items-center justify-center sm:h-72 sm:w-[173px] lg:h-[42vh] lg:w-[210px]">
         <span className="font-display text-5xl text-steel-600">
           {IDENTITY.firstName[0]}
           {IDENTITY.lastName[0]}
@@ -53,7 +53,16 @@ export default function FullFigure() {
   }
 
   return (
-    <figure className={`relative shrink-0 select-none ${glitching ? "is-glitching" : ""}`}>
+    /* `w-fit` es obligatorio, no cosmético.
+     *
+     * La imagen se dimensiona por el alto y deja que el ancho salga solo
+     * (`w-auto`), pero las dos copias del glitch se posicionan con `inset-0`:
+     * miden lo que mida ESTE contenedor. Sin `w-fit`, el <figure> es un item
+     * flex y en móvil —donde el panel apila en columna— se estiraba a lo ancho
+     * de la columna entera: la foto ocupaba 107px y sus fantasmas 300px,
+     * descolgados casi 100px a la derecha. Ajustando la caja al contenido, las
+     * tres capas comparten exactamente la misma geometría. */
+    <figure className={`relative w-fit shrink-0 select-none ${glitching ? "is-glitching" : ""}`}>
       <span
         aria-hidden
         className="absolute inset-x-[-22%] bottom-[8%] top-[6%] -z-10"
@@ -68,7 +77,11 @@ export default function FullFigure() {
         src={RUTA}
         alt={`${IDENTITY.fullName}, ${IDENTITY.title}`}
         onError={() => setFalta(true)}
-        className="relative h-[28vh] w-auto max-w-none object-contain sm:h-[42vh]"
+        // Alto fijo en móvil en vez de `vh`: en un teléfono la altura del
+        // viewport cambia cada vez que el navegador oculta o muestra su barra,
+        // y con `vh` la figura se reescalaba a mitad de scroll. Desde `lg`, con
+        // la pantalla fija y sin barra que se mueva, el `vh` sí encaja.
+        className="relative h-60 w-auto max-w-none object-contain sm:h-72 lg:h-[42vh]"
       />
 
       {/* Copias tintadas: invisibles en reposo, se separan al glitchear. */}

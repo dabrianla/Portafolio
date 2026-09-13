@@ -35,16 +35,34 @@
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
   background-color: var(--color-steel-950);
   color: var(--color-steel-100);
   font-family: var(--font-tech);
-  /* El menú es una experiencia a pantalla completa: no debe haber scroll. */
-  overflow: hidden;
   overscroll-behavior: none;
+}
+
+/* El menú es una experiencia a pantalla completa y no debe scrollear — pero
+   solo cuando la pantalla da para ello.
+ *
+ * Bloquear el scroll en un móvil era una trampa: el contenido de una sección no
+ * cabe en un viewport de 640px, y como las pantallas lo centran verticalmente,
+ * lo que sobra se reparte ARRIBA y abajo. Lo de abajo aún se intuía; lo de
+ * arriba quedaba recortado por el `overflow` y sin ninguna forma de alcanzarlo.
+ * El título de cada sección vivía justo ahí: en /logros el <h1> entero caía
+ * fuera de la pantalla, y en la portada el nombre se cortaba por la mitad.
+ *
+ * Desde `lg` (1024px) se recupera la pantalla fija de siempre, que es donde el
+ * diseño de "cada sección es una pantalla de juego" sí se sostiene. */
+@media (min-width: 1024px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
 }
 
 /* Las teclas de las líneas de ayuda.

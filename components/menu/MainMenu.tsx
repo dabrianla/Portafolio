@@ -38,7 +38,7 @@ export default function MainMenu() {
   });
 
   return (
-    <main className="relative h-dvh w-full overflow-hidden">
+    <main className="relative min-h-dvh w-full lg:h-dvh lg:overflow-hidden">
       {/* Marcas de esquina del HUD. */}
       <span
         aria-hidden
@@ -53,7 +53,11 @@ export default function MainMenu() {
         initial="hidden"
         animate={leaving ? "leaving" : "visible"}
         variants={menuListVariants}
-        className="mx-auto flex h-full max-w-[1500px] flex-col justify-center gap-10 px-6 pb-20 sm:px-8 lg:grid lg:grid-cols-[minmax(0,36%)_minmax(0,1fr)] lg:items-center lg:gap-16 lg:px-16 lg:pb-0"
+        // Igual que en `SectionShell`: pantalla fija desde `lg`, página que
+        // fluye por debajo. El `pt-24` despeja las marcas de esquina del HUD y
+        // el `pb-28` deja sitio al contador de sección y al interruptor de
+        // sonido, que van anclados abajo.
+        className="mx-auto flex min-h-dvh max-w-[1500px] flex-col justify-start gap-10 px-6 pb-28 pt-24 sm:px-8 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,36%)_minmax(0,1fr)] lg:items-center lg:justify-center lg:gap-16 lg:px-16 lg:pb-0 lg:pt-0"
       >
         <BrandTitle />
 
