@@ -1,0 +1,398 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------
+   Tokens de diseño.
+   Los grises son fríos y de contraste alto: el "acero" del fondo. Los acentos
+   viven aparte, en :root, porque cambian en tiempo de ejecución al entrar en
+   cada sección.
+   ------------------------------------------------------------------------- */
+@theme {
+  --color-steel-950: #07090c;
+  --color-steel-900: #0e1116;
+  --color-steel-800: #171b22;
+  --color-steel-700: #232932;
+  --color-steel-600: #333b47;
+  --color-steel-500: #4a5462;
+  --color-steel-400: #6b7686;
+  --color-steel-300: #98a2b0;
+  --color-steel-100: #f2f5f8;
+
+  --color-ki-cyan: #00e5ff;
+  --color-ki-magenta: #ff2d95;
+  --color-ki-violet: #7c4dff;
+
+  --font-display: var(--font-anton), "Arial Narrow", "Haettenschweiler", sans-serif;
+  --font-tech: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  /* Acento activo. `applyAccent()` (lib/theme/palette.ts) reescribe estas dos
+     variables al navegar, y con eso se recolorea toda la pantalla de golpe. */
+  --accent: #00e5ff;
+  --accent-alt: #ff2d95;
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-steel-950);
+  color: var(--color-steel-100);
+  font-family: var(--font-tech);
+  /* El menú es una experiencia a pantalla completa: no debe haber scroll. */
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Las teclas de las líneas de ayuda.
+   El navegador le pone `font-family: monospace` a `<kbd>`, y eso activa el
+   ajuste de tamaño de fuente monoespaciada de Chrome: el elemento deja de
+   respetar el tamaño heredado y cae a ~9,6px, por debajo del mínimo legible del
+   sitio. Heredando la fuente, el ajuste no se aplica. */
+kbd {
+  font: inherit;
+}
+
+::selection {
+  background: var(--accent);
+  color: #07090c;
+}
+
+/* -------------------------------------------------------------------------
+   Capas del fondo
+   ------------------------------------------------------------------------- */
+
+/* Vetas del acero cepillado. Se anima `transform`, nunca `background-position`,
+   que forzaría un repaint de toda la capa en cada frame. */
+.metal-grain {
+  background-image:
+    repeating-linear-gradient(
+      104deg,
+      rgba(255, 255, 255, 0.035) 0px,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      104deg,
+      rgba(0, 0, 0, 0.4) 0px,
+      rgba(0, 0, 0, 0.4) 2px,
+      transparent 2px,
+      transparent 9px
+    ),
+    linear-gradient(104deg, #10141a 0%, #2b323d 32%, #151a21 58%, #333c49 78%, #0d1015 100%);
+  animation: metal-drift 46s linear infinite;
+  will-change: transform;
+}
+
+@keyframes metal-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-8%, -4%, 0);
+  }
+}
+
+.scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.32) 0px,
+    rgba(0, 0, 0, 0.32) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Grano fílmico: el SVG se rasteriza una sola vez y el temblor es puro
+   transform con pasos discretos. */
+.noise-layer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-jitter 0.6s steps(1) infinite;
+  will-change: transform;
+}
+
+@keyframes grain-jitter {
+  0% { transform: translate3d(0, 0, 0); }
+  20% { transform: translate3d(-3%, 2%, 0); }
+  40% { transform: translate3d(2%, -3%, 0); }
+  60% { transform: translate3d(-2%, -2%, 0); }
+  80% { transform: translate3d(3%, 1%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* -------------------------------------------------------------------------
+   Aura de ki
+   ------------------------------------------------------------------------- */
+
+/* Tres siluetas alternándose a 8 fps (0.375s / 3 fotogramas). El `steps(1)`
+   es esencial: interpolar entre ellas produciría un latido suave y perdería el
+   aspecto de animación dibujada a mano. */
+.ki-frame {
+  animation: ki-cycle 0.375s steps(1) infinite;
+}
+
+@keyframes ki-cycle {
+  0%,
+  33.32% {
+    opacity: 1;
+  }
+  33.33%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.ki-pulse {
+  transform-origin: center;
+  animation: ki-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes ki-breathe {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+  50% {
+    transform: scaleX(1.03) scaleY(1.09);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Formas puntiagudas
+   ------------------------------------------------------------------------- */
+
+/* Filo del item de menú: recto a la izquierda, cortado en punta a la derecha.
+   Es la forma base de toda la interfaz. */
+.clip-blade {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 28px) 100%, 0 100%);
+}
+
+/* Variante invertida, para el HUD y los paneles secundarios. */
+.clip-blade-alt {
+  clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Marca de esquina del HUD. */
+.clip-corner {
+  clip-path: polygon(0 0, 100% 0, 100% 34%, 34% 34%, 34% 100%, 0 100%);
+}
+
+/* -------------------------------------------------------------------------
+   Glitch periódico del nombre
+   Tres copias apiladas del título: la legible y dos tintadas en cian y
+   magenta. Cada 15 s (lo decide `useGlitchPulse`) las copias de color se
+   trocean con `clip-path` y se desplazan, como una señal de vídeo que pierde
+   sincronía. El `steps(1)` es lo que lo hace saltar entre estados en lugar de
+   interpolar: interpolado se vería como un texto flotando, no como una avería.
+   ------------------------------------------------------------------------- */
+.glitch-layer {
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.is-glitching .glitch-layer {
+  will-change: transform, clip-path;
+}
+
+.is-glitching .glitch-layer--a {
+  animation: brand-glitch-a 0.62s steps(1) 1;
+}
+
+.is-glitching .glitch-layer--b {
+  animation: brand-glitch-b 0.62s steps(1) 1;
+}
+
+.is-glitching .glitch-main {
+  animation: brand-glitch-main 0.62s steps(1) 1;
+}
+
+@keyframes brand-glitch-a {
+  0%, 100% { opacity: 0; transform: translate3d(0, 0, 0); clip-path: inset(0 0 0 0); }
+  6%  { opacity: 1; transform: translate3d(-7px, 2px, 0);  clip-path: inset(6% 0 68% 0); }
+  17% { opacity: 1; transform: translate3d(6px, -3px, 0);  clip-path: inset(44% 0 30% 0); }
+  29% { opacity: 1; transform: translate3d(-11px, 1px, 0); clip-path: inset(72% 0 5% 0); }
+  41% { opacity: 1; transform: translate3d(4px, 3px, 0);   clip-path: inset(2% 0 82% 0); }
+  53% { opacity: 1; transform: translate3d(-5px, -2px, 0); clip-path: inset(33% 0 45% 0); }
+  67% { opacity: 1; transform: translate3d(9px, 0, 0);     clip-path: inset(57% 0 18% 0); }
+  79% { opacity: 1; transform: translate3d(-3px, 2px, 0);  clip-path: inset(16% 0 60% 0); }
+  90% { opacity: 0.45; transform: translate3d(2px, 0, 0);  clip-path: inset(0 0 0 0); }
+}
+
+@keyframes brand-glitch-b {
+  0%, 100% { opacity: 0; transform: translate3d(0, 0, 0); clip-path: inset(0 0 0 0); }
+  6%  { opacity: 1; transform: translate3d(8px, -2px, 0);  clip-path: inset(38% 0 40% 0); }
+  17% { opacity: 1; transform: translate3d(-6px, 3px, 0);  clip-path: inset(4% 0 74% 0); }
+  29% { opacity: 1; transform: translate3d(10px, -1px, 0); clip-path: inset(62% 0 12% 0); }
+  41% { opacity: 1; transform: translate3d(-4px, -3px, 0); clip-path: inset(24% 0 56% 0); }
+  53% { opacity: 1; transform: translate3d(7px, 2px, 0);   clip-path: inset(78% 0 2% 0); }
+  67% { opacity: 1; transform: translate3d(-9px, 0, 0);    clip-path: inset(10% 0 66% 0); }
+  79% { opacity: 1; transform: translate3d(3px, -2px, 0);  clip-path: inset(50% 0 26% 0); }
+  90% { opacity: 0.45; transform: translate3d(-2px, 0, 0); clip-path: inset(0 0 0 0); }
+}
+
+/* La copia legible solo tiembla: si también se troceara, el nombre dejaría de
+   leerse durante medio segundo. */
+@keyframes brand-glitch-main {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  11% { transform: translate3d(2px, -1px, 0); }
+  23% { transform: translate3d(-3px, 1px, 0); }
+  37% { transform: translate3d(1px, 2px, 0); }
+  51% { transform: translate3d(-2px, -2px, 0); }
+  65% { transform: translate3d(3px, 0, 0); }
+  81% { transform: translate3d(-1px, 1px, 0); }
+}
+
+/* -------------------------------------------------------------------------
+   Venas del rayo
+   Las separaciones entre casillas son el fondo de la fila asomando por los
+   huecos de los recortes. Ese fondo lleva el mismo degradado del rayo, alineado
+   al viewport para que el color continúe de una fila a otra, y encima le pasa
+   un destello que recorre las venas. Solo `transform`: el compositor lo resuelve
+   sin repintar.
+   ------------------------------------------------------------------------- */
+/* Arco eléctrico: el destello salta por las venas en lugar de deslizarse. Las
+   posiciones son irregulares y van con `steps(1)` —sin interpolar—, que es el
+   mismo recurso del aura de ki: interpolado se leería como una luz paseando,
+   y a saltos se lee como corriente descargando. */
+.vein-arc {
+  animation: vein-arc 1.05s steps(1) infinite;
+  will-change: transform;
+}
+
+@keyframes vein-arc {
+  0% { transform: translate3d(-48%, -52%, 0); }
+  11% { transform: translate3d(12%, -18%, 0); }
+  23% { transform: translate3d(-30%, 34%, 0); }
+  36% { transform: translate3d(41%, 8%, 0); }
+  47% { transform: translate3d(-14%, -40%, 0); }
+  59% { transform: translate3d(28%, 45%, 0); }
+  71% { transform: translate3d(-45%, 6%, 0); }
+  84% { transform: translate3d(19%, -33%, 0); }
+  93% { transform: translate3d(-8%, 22%, 0); }
+}
+
+/* Temblor de la propia vena. Al mover la capa recortada se desplaza también su
+   recorte, así que cambia qué parte asoma por los huecos entre casillas: las
+   líneas vibran y se desbordan un pelo sobre los bordes, como hace un arco. */
+.vein-jitter {
+  animation: vein-jitter 0.5s steps(1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes vein-jitter {
+  0% { transform: translate3d(0, 0, 0); opacity: 1; }
+  17% { transform: translate3d(-1.5px, 1px, 0); opacity: 0.6; }
+  33% { transform: translate3d(2px, -1px, 0); opacity: 0.95; }
+  50% { transform: translate3d(-1px, -1.5px, 0); opacity: 0.72; }
+  67% { transform: translate3d(1.5px, 1.5px, 0); opacity: 1; }
+  84% { transform: translate3d(-2px, 0, 0); opacity: 0.55; }
+}
+
+/* Sacudida fuerte, sincronizada con la del rayo: es la misma descarga. */
+.vein-glitching {
+  animation: vein-glitch 0.42s steps(1) 1;
+}
+
+@keyframes vein-glitch {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 1; }
+  15% { transform: translate3d(-7px, 3px, 0); opacity: 0.35; }
+  38% { transform: translate3d(6px, -4px, 0); opacity: 1; }
+  62% { transform: translate3d(-9px, 0, 0); opacity: 0.5; }
+  85% { transform: translate3d(4px, 2px, 0); opacity: 0.9; }
+}
+
+/* -------------------------------------------------------------------------
+   Interferencia del rayo
+   Solo `transform` y `opacity`, que el compositor resuelve sin repintar. El
+   glitch del nombre trocea con `clip-path`, y aquí saldría caro: iría anidado
+   dentro del recorte del propio rayo y sobre una capa a pantalla completa.
+   ------------------------------------------------------------------------- */
+.bolt-glitch {
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.bolt-glitch--a {
+  animation: bolt-glitch-a 0.42s steps(1) 1;
+}
+
+.bolt-glitch--b {
+  animation: bolt-glitch-b 0.42s steps(1) 1;
+}
+
+@keyframes bolt-glitch-a {
+  0%, 100% { opacity: 0; transform: translate3d(0, 0, 0); }
+  12% { opacity: 0.5; transform: translate3d(-9px, 3px, 0); }
+  34% { opacity: 0.3; transform: translate3d(6px, -4px, 0); }
+  58% { opacity: 0.55; transform: translate3d(-12px, 0, 0); }
+  80% { opacity: 0.25; transform: translate3d(4px, 2px, 0); }
+}
+
+@keyframes bolt-glitch-b {
+  0%, 100% { opacity: 0; transform: translate3d(0, 0, 0); }
+  12% { opacity: 0.35; transform: translate3d(10px, -3px, 0); }
+  34% { opacity: 0.5; transform: translate3d(-7px, 4px, 0); }
+  58% { opacity: 0.28; transform: translate3d(13px, 0, 0); }
+  80% { opacity: 0.45; transform: translate3d(-5px, -2px, 0); }
+}
+
+/* -------------------------------------------------------------------------
+   Scroll interno de los paneles
+   Los paneles del CV pueden desbordar en pantallas bajas. La barra nativa de
+   Windows es un bloque gris claro que rompe la estética, así que se reduce a
+   un filo del color de acento.
+   ------------------------------------------------------------------------- */
+.panel-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.panel-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+/* -------------------------------------------------------------------------
+   Accesibilidad
+   Cuando el sistema pide reducir el movimiento apagamos las animaciones
+   ambientales por completo. Las transiciones de navegación se acortan desde
+   TypeScript (`useReducedMotion`), no aquí.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .metal-grain,
+  .noise-layer,
+  .ki-frame,
+  .ki-pulse,
+  .bolt-glitch,
+  .vein-arc,
+  .vein-jitter,
+  .vein-glitching,
+  .is-glitching .glitch-layer,
+  .is-glitching .glitch-main {
+    animation: none !important;
+  }
+
+  .ki-frame:not(:first-of-type) {
+    opacity: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

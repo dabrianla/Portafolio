@@ -1,0 +1,2 @@
+import{d as r}from"./chunk-ZL4BHRHN.js";function d(n,o){let c=e=>{let t=String(e??"");return/[";\n]/.test(t)?`"${t.replace(/"/g,'""')}"`:t};return[n,...o].map(e=>e.map(c).join(";")).join(`\r
+`)}function a(n,o){let c=new Blob(["\uFEFF"+o],{type:"text/csv;charset=utf-8;"}),e=URL.createObjectURL(c),t=document.createElement("a");t.href=e,t.download=n.endsWith(".csv")?n:`${n}.csv`,document.body.appendChild(t),t.click(),t.remove(),URL.revokeObjectURL(e)}var s=r(()=>{"use strict"});export{d as a,a as b,s as c};
