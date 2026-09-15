@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# Bloquea el commit si lo que vas a subir contiene algo con pinta de secreto.
+#
+# Por qué existe: GitHub ya tiene escaneo de secretos y protección de push, pero
+# actúa cuando el commit ya está hecho. Esto actúa antes, en tu máquina, y además
+# conoce cosas que solo son sensibles en este proyecto y que GitHub no sabe.
+#
+# Solo mira lo que está EN EL ÍNDICE (`git show :fichero`), no el árbol de
+# trabajo: es exactamente lo que se va a commitear, ni más ni menos.
+#
+# Instalación (una vez por clon):
+#   git config core.hooksPath .githooks
+#
+# Si alguna vez da un falso positivo y necesitas pasar igualmente:
+#   git commit --no-verify
+#
+# Nota sobre los bundles de las demos: los patrones exigen un VALOR, no solo el
+# nombre del campo. Los bundles de Angular llevan `apiKey` y `geminiApiKey` como
+# nombres de propiedad y como cadena vacía, y eso no debe bloquear nada:
+# `apiKey:""` pasa, `apiKey:"AIzaSy…"` no.
+
+set -u
+
+if [ -t 1 ]; then
+  ROJO=$(printf '\033[31m'); AMARILLO=$(printf '\033[33m')
+  GRIS=$(printf '\033[90m'); FIN=$(printf '\033[0m')
+else
+  ROJO=''; AMARILLO=''; GRIS=''; FIN=''
+fi
+
+INFORME=$(mktemp) || exit 0
+trap 'rm -f "$INFORME"' EXIT
+
+# Un patrón por línea: nombre|expresión regular extendida
+PATRONES=$(cat <<'REGEX'
+Clave de Google (AIza…)|AIza[0-9A-Za-z_-]{30,}
+Clave privada|-----BEGIN[A-Z ]*PRIVATE KEY-----
+Cuenta de servicio de Google|"type"[[:space:]]*:[[:space:]]*"service_account"
+Campo private_key|"private_key"[[:space:]]*:[[:space:]]*"[^"]
+client_secret con valor|client_secret["']?[[:space:]]*[:=][[:space:]]*["'][^"']{8,}
+Clave de acceso de AWS|AKIA[0-9A-Z]{16}
+Token de GitHub|gh[pousr]_[A-Za-z0-9]{30,}
+Token de Slack|xox[baprs]-[0-9A-Za-z-]{10,}
+Clave de Stripe|sk_(live|test)_[0-9A-Za-z]{16,}
+apiKey con valor|apiKey["']?[[:space:]]*[:=][[:space:]]*["'][A-Za-z0-9_-]{20,}["']
+geminiApiKey con valor|geminiApiKey["']?[[:space:]]*[:=][[:space:]]*["'][^"']+["']
+Proyecto Firebase de La Rosa SpA|marcacion-226cc
+REGEX
+)
+
+for FICHERO in $(git diff --cached --name-only --diff-filter=ACM); do
+  # Este fichero lleva los patrones escritos como texto —`marcacion-226cc`
+  # entre ellos—, así que sin esta excepción se bloquearía a sí mismo cada vez
+  # que se edite.
+  [ "$FICHERO" = ".githooks/pre-commit" ] && continue
+
+  CONTENIDO=$(git show ":$FICHERO" 2>/dev/null) || continue
+  # Los binarios no se inspeccionan: no hay líneas que enseñar.
+  printf '%s' "$CONTENIDO" | grep -Iq . 2>/dev/null || continue
+
+  printf '%s\n' "$PATRONES" | while IFS='|' read -r NOMBRE REGEX; do
+    [ -z "$NOMBRE" ] && continue
+    printf '%s' "$CONTENIDO" | grep -nEo -- "$REGEX" 2>/dev/null | head -3 |
+      while IFS= read -r COINCIDENCIA; do
+        LINEA=${COINCIDENCIA%%:*}
+        TEXTO=${COINCIDENCIA#*:}
+        # Solo los primeros caracteres: se trata de que reconozcas qué es, no de
+        # volver a escribir el secreto entero en la terminal.
+        RECORTE=$(printf '%s' "$TEXTO" | cut -c1-30)
+        {
+          printf '  %s✖%s %s\n' "$ROJO" "$FIN" "$NOMBRE"
+          printf '    %s:%s  %s%s…%s\n' "$FICHERO" "$LINEA" "$GRIS" "$RECORTE" "$FIN"
+        } >>"$INFORME"
+      done
+  done
+done
+
+[ -s "$INFORME" ] || exit 0
+
+printf '\n%sCommit bloqueado: posible secreto en los cambios preparados.%s\n\n' "$ROJO" "$FIN" >&2
+cat "$INFORME" >&2
+printf '\n%sSi de verdad no es un secreto:%s git commit --no-verify\n' "$AMARILLO" "$FIN" >&2
+printf '%sSi lo es:%s sácalo del código, y si ya se subió alguna vez, rótalo —\n' "$AMARILLO" "$FIN" >&2
+printf '  borrarlo del árbol no lo revoca.\n\n' >&2
+exit 1
