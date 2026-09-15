@@ -22,6 +22,18 @@ mismo cursor que el teclado.
 > tiene referenciados y la página se queda sin CSS (404 en `layout.css`). Si
 > pasa, para el servidor, borra `.next` y vuelve a arrancar.
 
+En un clon nuevo, activa el hook que bloquea secretos antes de commitear:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Es un ajuste local, así que no viaja con el repositorio: sin él, `.githooks/`
+está ahí pero inerte. Revisa el índice buscando claves —incluido lo que solo es
+sensible aquí, como el identificador del proyecto Firebase del cliente— y corta
+el commit si encuentra algo. Para saltártelo en un falso positivo,
+`git commit --no-verify`.
+
 ## Estructura
 
 | Ruta | Qué contiene |
