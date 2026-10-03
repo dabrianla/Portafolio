@@ -95,6 +95,22 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
           ref={frame}
           src={demo.src}
           title={title}
+          /* Las demos son mi propio código, así que esto no es contención
+           * frente a un atacante: la demo se sirve del mismo origen, y con
+           * `allow-scripts` + `allow-same-origin` podría alcanzar `parent` y
+           * quitarse el sandbox ella misma. Contener de verdad exigiría otro
+           * origen.
+           *
+           * Lo que sí hace, y por eso está: retirar permisos que ninguna demo
+           * necesita. Sin `allow-top-navigation` una dependencia comprometida
+           * de Angular no puede llevarse el portafolio entero a otra URL, y sin
+           * `allow-popups` no puede abrir ventanas.
+           *
+           * Cada permiso que queda está porque algo lo usa: `same-origin` para
+           * el `localStorage` que siembra la demo y su IndexedDB, `downloads`
+           * para las exportaciones (`createObjectURL`), y `forms`/`modals` para
+           * los formularios y los `confirm()` de Angular. */
+          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"
           className={`h-full w-full bg-steel-950 transition-opacity duration-300 ${
             live ? "opacity-100" : "pointer-events-none opacity-55"
           }`}

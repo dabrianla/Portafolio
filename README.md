@@ -262,11 +262,60 @@ opción `orientation`. En rejilla, `skip` marca las casillas que la navegación
 debe atravesar sin detenerse. Omitir `onConfirm` desactiva la captura global de
 Enter, necesaria en pantallas que ya tienen botones enfocables.
 
+## Seguridad
+
+**Hook de secretos.** `.githooks/pre-commit` bloquea el commit si lo preparado
+contiene algo con pinta de clave. Se activa una vez por clon:
+
+```
+git config core.hooksPath .githooks
+```
+
+Los patrones exigen un *valor*, no solo el nombre del campo, porque los bundles
+de Angular llevan `apiKey` como propiedad vacía y eso no debe bloquear nada:
+`apiKey:""` pasa, `apiKey:"AIzaSy…"` no.
+
+**Las cabeceras viven en `next.config.ts`,** no en un `vercel.json`. Dos
+decisiones que parecen erratas y no lo son:
+
+- **`frame-ancestors 'self'`, no `'none'`.** La cabecera también se sirve en
+  `/demos/*`, y esas páginas las enmarca el propio portafolio en `DemoFrame`.
+  Con `'none'` el iframe de las demos queda en blanco. Lo mismo vale para
+  `X-Frame-Options: SAMEORIGIN` en vez de `DENY`.
+- **No hay `upgrade-insecure-requests`, a propósito.** Asciende el iframe de las
+  demos a `https://localhost:3000`, que ya no es el mismo origen que `'self'`, y
+  el navegador lo bloquea. Pasa con `next dev` y también con `next start`, así
+  que condicionarlo a `NODE_ENV` no sirve. Tampoco se pierde nada: Vercel ya
+  manda `Strict-Transport-Security` con `preload`.
+
+`'unsafe-inline'` en `script-src` es obligatorio —el streaming de Next y Angular
+meten scripts en línea—, así que la política no protege de inyección en línea.
+Lo que sí hace es acotar a dónde puede hablar la página: `connect-src` solo deja
+`generativelanguage.googleapis.com` (Gemini en MiniApp) y `mindicador.cl` (la UF
+y el dólar). **Si una demo empieza a llamar a otro sitio, hay que añadirlo ahí o
+fallará en silencio.**
+
+**El `sandbox` del iframe no es contención.** La demo es del mismo origen y, con
+`allow-scripts` + `allow-same-origin`, podría alcanzar `parent` y quitarse el
+sandbox —Chrome avisa de esto por consola en cada carga, y el aviso es
+esperado—. Está para retirar permisos que ninguna demo necesita: sin
+`allow-top-navigation`, una dependencia comprometida no puede llevarse el
+portafolio a otra URL. Contener de verdad exigiría servir las demos desde otro
+origen.
+
+**Al recompilar una demo, revisa la config de Firebase.** El proyecto Angular de
+Marcación todavía lleva la clave en su `environment`, así que cada recompilación
+la reintroduce en el bundle. El hook lo pilla; no lo pases con `--no-verify`.
+
 ## Pendiente
 
 - Revisar con Dabrian los cuatro objetivos "por desbloquear" de
   `content/achievements.ts`: son los únicos textos del sitio que no salen de un
   hecho comprobable.
 - Llenar la siguiente casilla del selector: hoy quedan 4 *PRÓXIMAMENTE*.
-- Inicializar git y publicar el repositorio.
-- Deploy en Vercel.
+- **Restringir o regenerar la clave `AIza…` del proyecto de Firebase de
+  Marcación** (el identificador lo da por consola el propio hook). Sigue viva
+  en el commit `3612d7e` de un repositorio público: quitarla del árbol no la
+  revoca.
+- Sacar la clave del `environment` del proyecto Angular de Marcación, que es de
+  donde vuelve a entrar en cada recompilación.
