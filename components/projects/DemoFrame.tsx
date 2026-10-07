@@ -6,16 +6,16 @@ import type { ProjectDemo } from "@/content/projects";
 /**
  * Ancho máximo de la demo lanzada en escritorio.
  *
- * Estas son apps de tablet de mostrador, no de móvil. Dejarlas llenar un
- * monitor panorámico las estira a ~2:1 y dejan de parecer lo que son, así que
- * el ancho se topa a 4:3 de la altura disponible y la caja queda centrada.
+ * Se muestran con silueta de teléfono, en vertical. Dejarlas llenar un
+ * monitor panorámico las estira y dejan de parecer una app, así que
+ * el ancho se topa a 9:19.5 de la altura disponible y la caja queda centrada.
  *
  * Los 152px que se restan son el cromo del overlay: `p-8` arriba, `pb-20`
  * abajo para que el botón de volver no muerda el borde, el `gap-3` y la fila
  * de credenciales. Es un tope, no una medida: si la ventana es estrecha manda
- * el `w-full` y la caja sale más baja que 4:3.
+ * el `w-full` y la caja sale más ancha que un teléfono.
  */
-const ANCHO_MAXIMO_ESCRITORIO = "lg:mx-auto lg:w-full lg:max-w-[calc((100dvh-152px)*4/3)]";
+const ANCHO_MAXIMO_ESCRITORIO = "lg:mx-auto lg:w-full lg:max-w-[calc((100dvh-152px)*9/19.5)]";
 
 type Props = {
   demo: ProjectDemo;
@@ -80,7 +80,7 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
     <div
       className={
         live
-          ? "fixed inset-0 z-40 flex flex-col gap-2 bg-steel-950 p-3 pb-16 lg:gap-3 lg:p-8 lg:pb-20"
+          ? "fixed inset-0 z-[55] flex flex-col gap-2 bg-steel-950 p-3 pb-16 lg:gap-3 lg:p-8 lg:pb-20"
           : // `flex-1` es lo que ensancha el marco: el padre es una fila, y sin
             // esto la caja se queda en su ancho de contenido (300px) por mucha
             // pantalla que haya al lado.

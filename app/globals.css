@@ -205,13 +205,12 @@ kbd {
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
 }
 
-/* Con la demo lanzada a pantalla completa en móvil el corte estorba: mordería
-   la esquina de la propia app en lugar de la del marco que la enmarca. En
-   escritorio la demo sigue dentro de su panel, así que el corte se mantiene. */
-@media (max-width: 1023px) {
-  .clip-demo--fullscreen {
-    clip-path: none;
-  }
+/* Con la demo lanzada el corte estorba en cualquier tamaño: mordería la esquina
+   de la propia app en lugar de la del marco que la enmarca. Antes esto valía
+   solo por debajo de `lg`, porque en escritorio la demo se quedaba dentro de su
+   panel; desde que también va a pantalla completa, el corte la recorta a ella. */
+.clip-demo--fullscreen {
+  clip-path: none;
 }
 
 /* -------------------------------------------------------------------------
