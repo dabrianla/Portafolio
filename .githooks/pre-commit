@@ -32,6 +32,18 @@ fi
 INFORME=$(mktemp) || exit 0
 trap 'rm -f "$INFORME"' EXIT
 
+# Valores que son públicos a propósito y no deben bloquear nada.
+#
+# Solo entra aquí lo que es público por diseño Y no puede hacer daño. La clave
+# de FittApp es de `fittapp-demo-2026`, un proyecto aparte, con datos
+# inventados y en plan gratuito: sin facturación no puede generar cobros, que
+# es justo el riesgo que tiene una clave de Google suelta. La del proyecto real
+# no está aquí y tiene que seguir bloqueándose.
+PERMITIDAS=$(cat <<'LITERALES'
+AIzaSyBGniAteZg91XKQYjjSY8y-LVjDKnTtMhM
+LITERALES
+)
+
 # Un patrón por línea: nombre|expresión regular extendida
 PATRONES=$(cat <<'REGEX'
 Clave de Google (AIza…)|AIza[0-9A-Za-z_-]{30,}
@@ -65,6 +77,14 @@ for FICHERO in $(git diff --cached --name-only --diff-filter=ACM); do
       while IFS= read -r COINCIDENCIA; do
         LINEA=${COINCIDENCIA%%:*}
         TEXTO=${COINCIDENCIA#*:}
+
+        # Las de la lista de permitidas no se reportan.
+        PERMITIDA=no
+        for LITERAL in $PERMITIDAS; do
+          case "$TEXTO" in *"$LITERAL"*) PERMITIDA=si ;; esac
+        done
+        [ "$PERMITIDA" = si ] && continue
+
         # Solo los primeros caracteres: se trata de que reconozcas qué es, no de
         # volver a escribir el secreto entero en la terminal.
         RECORTE=$(printf '%s' "$TEXTO" | cut -c1-30)

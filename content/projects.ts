@@ -116,14 +116,21 @@ export const PROJECTS: Project[] = [
       "composición corporal y gráficos de esfuerzo percibido.",
     stack: ["Expo", "React Native", "TypeScript", "Firebase", "Cloud Functions"],
     highlights: [
-      "Mira el diseño: tipografía de cartel deportivo sobre negro y lima",
-      "La demo es la interfaz sola, sin servidor: el acceso no va a funcionar",
-      "Está en desarrollo; es un adelanto, no una versión terminada",
+      "Entra como Juan Pérez y abre su rutina vigente del día",
+      "Registra una serie: el peso y las repeticiones quedan en su historial",
+      "Mira Progreso: mediciones corporales y gráficos de esfuerzo percibido",
+      "Entra como el coach y verás solo a sus alumnos, no a los de otro",
     ],
     demo: {
       src: "/demos/fittapp/",
-      storagePrefix: "fittapp:",
-      credentials: [],
+      // Firebase guarda la sesión con sus propias claves; el botón de reiniciar
+      // solo tiene que cerrarla para que la demo vuelva al acceso.
+      storagePrefix: "firebase:",
+      credentials: [
+        { label: "Alumno", value: "juan.perez", hint: "Con rutina e historial" },
+        { label: "Contraseña", value: "alumno123", hint: "Solo para esta demostración" },
+        { label: "Coach", value: "coach.demo", hint: "Contraseña coach123" },
+      ],
     },
   },
 

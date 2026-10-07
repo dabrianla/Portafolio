@@ -187,11 +187,15 @@ son SPAs de Angular; esta es una app de Expo (React Native) exportada a web con
   Expo no tiene bandera de línea de órdenes para eso. En el `index.html`
   exportado quedan dos rutas absolutas más —`manifest.json` y
   `apple-touch-icon.png`— que hay que prefijar a mano tras cada exportación.
-- Va con configuración de Firebase **de relleno**, no la de producción. El
-  proyecto real tiene datos de alumnos de verdad, y su `build:web` inyecta el
-  `.env` de producción: usarlo aquí publicaría las credenciales en el bundle y
-  apuntaría la demo a esos datos. Por eso el acceso no funciona; es lo
-  esperado, no un fallo.
+- Apunta a **`fittapp-demo-2026`**, un proyecto Firebase aparte en plan
+  gratuito, sembrado con `scripts/seed.ts` del proyecto de la app. Nunca al
+  real: ese tiene datos de alumnos de verdad, y su `build:web` inyecta el
+  `.env` de producción. La clave del proyecto de demo sí va pública en el
+  bundle, y el hook de secretos la tiene en su lista de permitidas: al no haber
+  facturación en el plan gratuito, no puede generar cobros. La del proyecto
+  real no está en esa lista y sigue bloqueándose.
+- Como la demo escribe en ese proyecto, cualquiera que entre puede modificar
+  los datos de prueba. Para dejarla como nueva se vuelve a sembrar.
 
 **Cada proyecto puede repintar la pantalla con sus colores.** `accent` y
 `accentAlt` en `content/projects.ts` son opcionales; sin ellos manda el acento

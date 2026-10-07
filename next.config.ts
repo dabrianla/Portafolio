@@ -25,9 +25,13 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  // `generativelanguage` es Gemini en MiniApp Inventario; `mindicador.cl` es la
-  // UF y el dólar que consulta el inventario. Nada más sale de aquí.
-  `connect-src 'self' https://generativelanguage.googleapis.com https://mindicador.cl${
+  // Cada origen está porque una demo concreta lo necesita:
+  // `generativelanguage` es Gemini en MiniApp Inventario, `mindicador.cl` es la
+  // UF y el dólar del inventario, y los cuatro de Firebase son el acceso y los
+  // datos de FittApp —`identitytoolkit` para entrar, `securetoken` para renovar
+  // la sesión, `firestore` para los datos e `installations` porque el SDK lo
+  // pide al arrancar—. Apuntan al proyecto de demostración, no al real.
+  `connect-src 'self' https://generativelanguage.googleapis.com https://mindicador.cl https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com${
     enDesarrollo ? " ws: wss:" : ""
   }`,
   "frame-src 'self'",
