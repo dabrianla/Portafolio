@@ -144,7 +144,7 @@ export default function ProjectsScreen() {
       <div
         style={clip}
         className={`shrink-0 lg:absolute lg:inset-0 lg:[clip-path:var(--grid-clip)] ${
-          live ? "max-lg:hidden" : ""
+          live ? "hidden" : ""
         }`}
       >
         {/* En móvil el rótulo aún cabe; en escritorio las casillas ocupan toda
@@ -167,9 +167,17 @@ export default function ProjectsScreen() {
       </div>
 
       {/* Escenario. */}
+      {/* El `clip-path` sale mientras la demo está lanzada, y no por estética:
+          un `clip-path` crea contexto de apilamiento y recorta a sus hijos
+          —también a uno `position: fixed`—. Con él puesto, la demo a pantalla
+          completa salía cortada contra el filo del rayo y el rayo se pintaba
+          por encima por mucho z-index que llevara, porque el z-index de la
+          demo solo compite dentro de este contexto. */}
       <div
         style={clip}
-        className="flex min-h-0 flex-1 flex-col lg:absolute lg:inset-0 lg:block lg:[clip-path:var(--stage-clip)]"
+        className={`flex min-h-0 flex-1 flex-col lg:absolute lg:inset-0 lg:block ${
+          live ? "" : "lg:[clip-path:var(--stage-clip)]"
+        }`}
       >
         {/* `pb-24` en lg deja sitio al botón de volver, que va fijo en esa
             esquina y si no se comería el borde inferior de la demo. */}
@@ -190,7 +198,11 @@ export default function ProjectsScreen() {
           `pointer-events-none` es obligatorio: es una capa a pantalla completa
           por encima de todo, y sin esto se tragaba cada clic de la página —el
           botón de info incluido—. Solo la ficha expandida recupera el puntero. */}
-      <div className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
+      <div
+        className={`pointer-events-none absolute inset-0 z-10 hidden ${
+          live ? "" : "lg:block"
+        }`}
+      >
         <BoltShape
           expanded={infoOpen && canShowInfo}
           quiet={live}
