@@ -41,6 +41,12 @@ export type Project = {
   /** Lo que el visitante debería mirar dentro de la demo. */
   highlights: string[];
   demo?: ProjectDemo;
+  /**
+   * Colores de la app, para que al seleccionarla la pantalla se repinte con
+   * ellos. Si no los lleva, se queda el acento de la sección.
+   */
+  accent?: string;
+  accentAlt?: string;
 };
 
 export const PROJECTS: Project[] = [
@@ -103,11 +109,39 @@ export const PROJECTS: Project[] = [
     },
   },
 
+  {
+    id: "fittapp",
+    status: "live",
+    code: "FIT",
+    name: "FITTAPP",
+    tagline: "Entrenador y alumnos",
+    description:
+      "App de entrenamiento personal: el coach arma la rutina de cada alumno y " +
+      "le asigna su nivel, y el alumno la sigue desde el teléfono y registra sus " +
+      "series. Cada coach ve solo a sus propios alumnos. Incluye historial de " +
+      "composición corporal y gráficos de esfuerzo percibido.",
+    stack: ["Expo", "React Native", "TypeScript", "Firebase", "Cloud Functions"],
+    highlights: [
+      "Mira el diseño: tipografía de cartel deportivo sobre negro y lima",
+      "La demo es la interfaz sola, sin servidor: el acceso no va a funcionar",
+      "Está en desarrollo; es un adelanto, no una versión terminada",
+    ],
+    // Lima #D0F41A sobre negro, la marca de la app. El segundo color es el
+    // blanco papel que usa en los titulares.
+    accent: "#D0F41A",
+    accentAlt: "#F4F4EE",
+    demo: {
+      src: "/demos/fittapp/",
+      storagePrefix: "fittapp:",
+      credentials: [],
+    },
+  },
+
   // Casillas por llenar: completan la primera página del selector y dejan claro
   // que la sección va a crecer, en lugar de dejar huecos vacíos. A partir del
   // séptimo proyecto la rejilla crea una segunda página sola y las flechas de
   // paso se activan.
-  ...Array.from({ length: 4 }, (_, i): Project => ({
+  ...Array.from({ length: 3 }, (_, i): Project => ({
     id: `proximamente-${i + 1}`,
     status: "coming-soon",
     code: "??",

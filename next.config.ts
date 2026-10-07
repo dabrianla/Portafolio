@@ -107,6 +107,10 @@ const nextConfig: NextConfig = {
           source: "/demos/miniapp/:path*",
           destination: "/demos/miniapp/index.html",
         },
+        {
+          source: "/demos/fittapp/:path*",
+          destination: "/demos/fittapp/index.html",
+        },
       ],
       fallback: [],
     };

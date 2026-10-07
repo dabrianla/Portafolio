@@ -178,6 +178,26 @@ sale más baja que 4:3 en vez de desbordarse.
 La vista previa del panel no cambia: es el señuelo del selector, y agrandarla
 choca con la geometría del rayo.
 
+**FittApp es una demo de interfaz, sin servidor, y a propósito.** Las otras dos
+son SPAs de Angular; esta es una app de Expo (React Native) exportada a web con
+`expo export -p web`. Dos cosas que no se pueden copiar del caso anterior:
+
+- Se exporta con `experiments.baseUrl: "/demos/fittapp"` en `app.json`, porque
+  si no el bundle se pide a `/_expo/...` desde la raíz del portafolio y da 404.
+  Expo no tiene bandera de línea de órdenes para eso. En el `index.html`
+  exportado quedan dos rutas absolutas más —`manifest.json` y
+  `apple-touch-icon.png`— que hay que prefijar a mano tras cada exportación.
+- Va con configuración de Firebase **de relleno**, no la de producción. El
+  proyecto real tiene datos de alumnos de verdad, y su `build:web` inyecta el
+  `.env` de producción: usarlo aquí publicaría las credenciales en el bundle y
+  apuntaría la demo a esos datos. Por eso el acceso no funciona; es lo
+  esperado, no un fallo.
+
+**Cada proyecto puede repintar la pantalla con sus colores.** `accent` y
+`accentAlt` en `content/projects.ts` son opcionales; sin ellos manda el acento
+de la sección. El efecto va después de `useSectionChrome` a propósito: los
+efectos corren en orden de declaración, así que el del proyecto escribe encima.
+
 **El atajo `I` se desactiva con la demo en marcha.** Desde que la demo cubre la
 pantalla en escritorio, la ficha se abriría detrás de ella —invisible— y se
 tragaría el siguiente Escape, que es el que cierra la demo.
@@ -327,7 +347,7 @@ la reintroduce en el bundle. El hook lo pilla; no lo pases con `--no-verify`.
 - Revisar con Dabrian los cuatro objetivos "por desbloquear" de
   `content/achievements.ts`: son los únicos textos del sitio que no salen de un
   hecho comprobable.
-- Llenar la siguiente casilla del selector: hoy quedan 4 *PRÓXIMAMENTE*.
+- Llenar la siguiente casilla del selector: hoy quedan 3 *PRÓXIMAMENTE*.
 - **Restringir o regenerar la clave `AIza…` del proyecto de Firebase de
   Marcación** (el identificador lo da por consola el propio hook). Sigue viva
   en el commit `3612d7e` de un repositorio público: quitarla del árbol no la
