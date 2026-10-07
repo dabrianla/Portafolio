@@ -3,6 +3,20 @@
 import { useCallback, useRef } from "react";
 import type { ProjectDemo } from "@/content/projects";
 
+/**
+ * Ancho máximo de la demo lanzada en escritorio.
+ *
+ * Estas son apps de tablet de mostrador, no de móvil. Dejarlas llenar un
+ * monitor panorámico las estira a ~2:1 y dejan de parecer lo que son, así que
+ * el ancho se topa a 4:3 de la altura disponible y la caja queda centrada.
+ *
+ * Los 152px que se restan son el cromo del overlay: `p-8` arriba, `pb-20`
+ * abajo para que el botón de volver no muerda el borde, el `gap-3` y la fila
+ * de credenciales. Es un tope, no una medida: si la ventana es estrecha manda
+ * el `w-full` y la caja sale más baja que 4:3.
+ */
+const ANCHO_MAXIMO_ESCRITORIO = "lg:mx-auto lg:w-full lg:max-w-[calc((100dvh-152px)*4/3)]";
+
 type Props = {
   demo: ProjectDemo;
   /** En vista previa el iframe está vivo pero es inerte y va atenuado. */
@@ -47,22 +61,26 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
   }, [demo]);
 
   return (
-    /* En escritorio la demo es un panel más dentro del escenario y su altura
+    /* En vista previa la demo es un panel más dentro del escenario y su altura
      * sale de la cadena de flex.
      *
-     * En móvil esa cadena no le daba altura utilizable: el iframe se quedaba en
-     * 323x150 —el 16% de la pantalla, y 150px es literalmente la altura por
-     * defecto de un <iframe>, la que se usa cuando `height: 100%` no resuelve—.
-     * Para una app de tablet eso es inservible, así que aquí la geometría es
-     * explícita en vez de heredada: proporción fija en vista previa y la
-     * pantalla entera al lanzarla.
+     * Esa cadena no da altura utilizable por sí sola: el iframe se quedaba en
+     * 323x150 —150px es literalmente la altura por defecto de un <iframe>, la
+     * que se usa cuando `height: 100%` no resuelve—. Para una app de tablet eso
+     * es inservible, así que la geometría es explícita en vez de heredada.
      *
-     * El `pb-16` reserva la banda inferior para el botón de volver, que flota
-     * por encima de esta capa. */
+     * Al lanzarla toma la pantalla entera, y en escritorio también. Antes
+     * volvía a su panel (`lg:static`), que mide el 39% del ancho porque el rayo
+     * se queda con el resto: la demo salía a 393x615 —el 17% de la ventana, y
+     * en vertical— para una app pensada en apaisado. Pulsar «probar» la hacía
+     * más pequeña que la propia vista previa.
+     *
+     * El `pb-16`/`lg:pb-20` reserva la banda inferior para el botón de volver,
+     * que flota por encima de esta capa. */
     <div
       className={
         live
-          ? "fixed inset-0 z-40 flex flex-col gap-2 bg-steel-950 p-3 pb-16 lg:static lg:z-auto lg:min-h-0 lg:flex-1 lg:gap-3 lg:bg-transparent lg:p-0"
+          ? "fixed inset-0 z-40 flex flex-col gap-2 bg-steel-950 p-3 pb-16 lg:gap-3 lg:p-8 lg:pb-20"
           : // `flex-1` es lo que ensancha el marco: el padre es una fila, y sin
             // esto la caja se queda en su ancho de contenido (300px) por mucha
             // pantalla que haya al lado.
@@ -87,7 +105,7 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
         }
         className={`clip-demo relative border-2 transition-colors duration-300 ${
           live
-            ? "clip-demo--fullscreen min-h-0 flex-1 border-[var(--accent)]"
+            ? `clip-demo--fullscreen min-h-0 flex-1 border-[var(--accent)] ${ANCHO_MAXIMO_ESCRITORIO}`
             : "aspect-[4/3] w-full cursor-pointer border-steel-600/70 hover:border-[var(--accent)]/70 focus-visible:border-[var(--accent)] focus-visible:outline-none lg:aspect-auto lg:min-h-0 lg:flex-1"
         }`}
       >
@@ -129,7 +147,9 @@ export default function DemoFrame({ demo, live, title, onLaunch }: Props) {
       </div>
 
       {live && (
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <div
+          className={`flex flex-wrap items-center gap-x-5 gap-y-2 ${ANCHO_MAXIMO_ESCRITORIO}`}
+        >
           {demo.credentials.map((credential) => (
             <span key={credential.label} className="flex items-baseline gap-2">
               <span className="font-tech text-[0.72rem] uppercase tracking-[0.12em] text-steel-400">

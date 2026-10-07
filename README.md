@@ -164,8 +164,23 @@ no los eligió nadie, son la altura por defecto de un `<iframe>`, la que queda
 cuando `height: 100%` no llega a resolver. Por debajo de `lg` el marco usa
 proporción 4:3 fija en vista previa y ocupa la pantalla entera al lanzarse; el
 botón de volver pasa entonces a `fixed` con `z-60`, porque es la única salida.
-En escritorio la demo sigue dentro del panel del rayo, dimensionada por la
-cadena de flex.
+
+**En escritorio la demo lanzada también toma la pantalla.** Antes volvía a su
+panel, que mide el 39% del ancho porque el rayo se queda con el resto —el filo
+izquierdo baja hasta el 42%, así que ensancharlo no es opción sin meter la demo
+debajo del rayo—. El resultado era que pulsar «probar» la encogía: de 393×686 en
+vista previa a **393×615 lanzada, el 17% de la ventana y en vertical**, para
+apps de tablet pensadas en apaisado. Ahora sale centrada a 4:3, topada por
+`max-w-[calc((100dvh-152px)*4/3)]`: **994×742 en 1600×900, el 51%**. El tope es
+de ancho, no de alto, así que en ventanas estrechas manda el `w-full` y la caja
+sale más baja que 4:3 en vez de desbordarse.
+
+La vista previa del panel no cambia: es el señuelo del selector, y agrandarla
+choca con la geometría del rayo.
+
+**El atajo `I` se desactiva con la demo en marcha.** Desde que la demo cubre la
+pantalla en escritorio, la ficha se abriría detrás de ella —invisible— y se
+tragaría el siguiente Escape, que es el que cierra la demo.
 
 **Los certificados viven en un solo sitio.** Estuvieron en la pestaña
 Formación del currículum y ahora están en LOGROS, no en las dos. `cv.ts` sigue

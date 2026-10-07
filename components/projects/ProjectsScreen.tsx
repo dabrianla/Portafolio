@@ -81,8 +81,13 @@ export default function ProjectsScreen() {
   const canShowInfo = isSelectable(focused);
 
   // Atajo de teclado para la ficha, en la línea del resto de la interfaz.
+  //
+  // Con la demo lanzada no: desde que ocupa la pantalla entera también en
+  // escritorio, la ficha se abriría detrás de ella —invisible— y además se
+  // tragaría el siguiente Escape, que es el que cierra la demo. Mientras la
+  // demo corre, las teclas son suyas.
   useEffect(() => {
-    if (busy || !canShowInfo) return;
+    if (busy || live || !canShowInfo) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() !== "i") return;
@@ -92,7 +97,7 @@ export default function ProjectsScreen() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [busy, canShowInfo]);
+  }, [busy, live, canShowInfo]);
 
   // Cambiar de casilla cierra lo que hubiera abierto de la anterior.
   const selectCard = useCallback(
