@@ -41,12 +41,6 @@ export type Project = {
   /** Lo que el visitante debería mirar dentro de la demo. */
   highlights: string[];
   demo?: ProjectDemo;
-  /**
-   * Colores de la app, para que al seleccionarla la pantalla se repinte con
-   * ellos. Si no los lleva, se queda el acento de la sección.
-   */
-  accent?: string;
-  accentAlt?: string;
 };
 
 export const PROJECTS: Project[] = [
@@ -126,10 +120,6 @@ export const PROJECTS: Project[] = [
       "La demo es la interfaz sola, sin servidor: el acceso no va a funcionar",
       "Está en desarrollo; es un adelanto, no una versión terminada",
     ],
-    // Lima #D0F41A sobre negro, la marca de la app. El segundo color es el
-    // blanco papel que usa en los titulares.
-    accent: "#D0F41A",
-    accentAlt: "#F4F4EE",
     demo: {
       src: "/demos/fittapp/",
       storagePrefix: "fittapp:",

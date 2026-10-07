@@ -13,8 +13,6 @@ import { useMenuNavigation } from "@/lib/hooks/useMenuNavigation";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { useSectionChrome } from "@/lib/hooks/useSectionChrome";
 import { gridClipPath, gridRows, stageClipPath } from "@/lib/theme/bolt";
-import { applyAccent } from "@/lib/theme/palette";
-import { entryByHref } from "@/content/menu";
 import { PROJECTS, isSelectable } from "@/content/projects";
 
 /**
@@ -81,20 +79,6 @@ export default function ProjectsScreen() {
 
   const focused = visible[index] ?? visible[0];
   const canShowInfo = isSelectable(focused);
-
-  // La pantalla se repinta con los colores de la app seleccionada.
-  //
-  // Va después de `useSectionChrome`, que es quien pone el acento de la
-  // sección: los efectos corren en orden de declaración, así que el del
-  // proyecto escribe encima y no al revés. Un proyecto sin colores propios
-  // —las ranuras libres, o los que aún no los tienen— devuelve el acento de
-  // la sección en lugar de quedarse con el del proyecto anterior.
-  useEffect(() => {
-    const seccion = entryByHref("/proyectos");
-    const accent = focused?.accent ?? seccion?.accent;
-    const accentAlt = focused?.accentAlt ?? seccion?.accentAlt;
-    if (accent && accentAlt) applyAccent(accent, accentAlt);
-  }, [focused]);
 
   // Atajo de teclado para la ficha, en la línea del resto de la interfaz.
   //
