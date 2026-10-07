@@ -9,3 +9,12 @@ build
 next-env.d.ts
 .vercel
 tsconfig.tsbuildinfo
+
+# Las tipografías de las demos quedan bajo `assets/node_modules/` porque Expo
+# conserva la ruta de origen del paquete al exportar. La regla `node_modules`
+# de la primera línea se las tragaba: en local se veían —están en disco— y en
+# Vercel salían con la fuente del sistema, porque nunca llegaron al repositorio.
+# Hay que reincluir el directorio antes que su contenido: git no entra en una
+# carpeta excluida.
+!public/demos/*/assets/node_modules/
+!public/demos/*/assets/node_modules/**
